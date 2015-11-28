@@ -38,21 +38,44 @@ gem specific_install -l "https://github.com/blue1st/btcbox.git"
 |Trade Add|注文の追加|読み書き|
 
 
-```
+オブジェクト生成時に必要に応じてAPIキーをつっこんでおく。
+
+第一引数でコインの種類を指定（デフォルトはBitCoin）、あとはAPIに応じて指定する感じ。
+
+```Ruby
 require 'btcbox'
 
-btc = Btcbox::Client.new("PUBLIC_KEY", "SECRET_KEY")
+btc = Btcbox::Client.new(PUBLIC_KEY,  SECRET_KEY)
 
-p btc.ticker("btc")
-#=> {"high"=>44678, "low"=>43304, "buy"=>43399, "sell"=>43586, "last"=>43597, "vol"=>3144.1311} 
+btc.ticker(["btc"|"ltc"|"doge"])
 
-p btc.depth("ltc")
-#=> {"asks"=>[[1100, 50], [1098, 30.523], [1027, 199.798], [1008, 85], [1000, 740.859], ...
+btc.depth(["btc"|"ltc"|"doge"])
 
-p btc.orders("doge")
-#=> [{"date"=>"1448008069", "price"=>0.0152, "amount"=>2017801.4164, "tid"=>"7536", "type"=>"sell"}, {"date"=>"1448008071", "price"=>0.0152, "amount"=>1440112.6136, "tid"=>"7537", "type"=>"sell"}, {"date"=>"1448018096", "price"=>0.0158, "amount"=>45818, "tid"=>"7538", "type"=>"buy"}, ... 
+btc.orders(["btc"|"ltc"|"doge"])
 
+btc.balance()
+
+btc.wallet(["btc"|"ltc"|"doge"])
+
+btc.trade_list(["btc"|"ltc"|"doge"], [since], ["open"|"all"] )
+#第二引数としてunixtimeを入れると、その時点以降の一覧となる
+#第三引数は"open"を指定すると未完了の注文のみ、"all"だと完了したものやキャンセルしたものを含めた一覧が返る
+
+btc.trade_view(["btc"|"ltc"|"doge"], id)
+#第二引数にtrade_listなどで取得したidを指定する
+
+btc.trade_cancel(["btc"|"ltc"|"doge"], id)
+#第二引数にtrade_listなどで取得したidを指定する
+
+btc.trade_add(["btc"|"ltc"|"doge"], amount, price, ["buy"|"sell"])
+#第二引数に個数、第三引数価格、第四引数に売買のいずれかを指定する
 ```
+
+みたいな感じ。
+
+戻り値の子細は公式のドキュメントを見るとよい。
+
+[Btcbox > API]("https=>//www.btcbox.co.jp/help/api.html")
 
 
 ## Contributing
