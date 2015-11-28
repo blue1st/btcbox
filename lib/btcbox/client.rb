@@ -2,6 +2,7 @@ require 'net/http'
 require 'uri'
 require 'openssl'
 require 'time'
+require 'json'
 
 module Btcbox
   class Client 
@@ -11,7 +12,7 @@ module Btcbox
       @api_url = api_url
     end
 
-    def fetch_api(uri_str, params = {}, method = "GET",limit = 10)
+    def fetch(uri_str, params = {}, method = "GET",limit = 10)
       uri = URI.parse(uri_str)
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = true if uri.port == 443
@@ -31,9 +32,9 @@ module Btcbox
       when Net::HTTPSuccess
         res.body
       when Net::HTTPRedirection
-        fetch_api(res["location"], params, method, limit - 1)
+        fetch(res["location"], params, method, limit - 1)
       else
-        res.value
+        raise ArgumentError, res.value
       end
     end
 
@@ -52,17 +53,20 @@ module Btcbox
 
     def ticker (coin = "btc")
       params = {coin:coin}
-      res = fetch_api("#{@api_url}/ticker", params)
+      json_str = fetch("#{@api_url}/ticker", params)
+      JSON.parse(json_str)
     end
 
     def depth (coin = "btc")
       params = {coin:coin}
-      res = fetch_api("#{@api_url}/depth", params)
+      json_str = fetch("#{@api_url}/depth", params)
+      JSON.parse(json_str)
     end
 
     def orders (coin = "btc")
       params = {coin:coin}
-      res = fetch_api("#{@api_url}/orders", params)
+      json_str = fetch("#{@api_url}/orders", params)
+      JSON.parse(json_str)
     end
 
 
@@ -71,13 +75,15 @@ module Btcbox
     def balance(coin = "btc")
       params = {coin:coin}
       params = auth(params)
-      res = fetch_api("#{@api_url}/balance", params, "POST")
+      json_str = fetch("#{@api_url}/balance", params, "POST")
+      JSON.parse(json_str)
     end
 
     def wallet (coin = "btc")
       params = {coin:coin}
       params = auth(params)
-      res = fetch_api("#{@api_url}/wallet", params, "POST")
+      json_str = fetch("#{@api_url}/wallet", params, "POST")
+      JSON.parse(json_str)
     end
 
     # 発注
@@ -86,14 +92,16 @@ module Btcbox
     def trade_list (coin = "btc", since = 0, type = "open")
       params = {coin:coin, since:since, type:type}
       params = auth(params)
-      res = fetch_api("#{@api_url}/trade_list", params, "POST")
+      json_str = fetch("#{@api_url}/trade_list", params, "POST")
+      JSON::parse(json_str)
     end
 
     # 個別の売買について id必須
     def trade_view (coin = "btc", id)
       params = {coin:coin, id:id}
       params = auth(params)
-      res = fetch_api("#{@api_url}/trade_view", params, "POST")
+      json_str = fetch("#{@api_url}/trade_view", params, "POST")
+      JSON::parse(json_str)
     end
 
 
@@ -102,13 +110,15 @@ module Btcbox
     def trade_cancel (coin = "btc", id)
       params = {coin:coin, id:id}
       params = auth(params)
-      res = fetch_api("#{@api_url}/trade_cancel", params, "POST")
+      json_str = fetch("#{@api_url}/trade_cancel", params, "POST")
+      JSON::parse(json_str)
     end
 
     def trade_add (coin = "btc", amount, price, type)
       params = {coin:coin, amount:amount, price:price, type:type}
       params = auth(params)
-      res = fetch_api("#{@api_url}/trade_add", params, "POST")
+      json_str = fetch("#{@api_url}/trade_add", params, "POST")
+      JSON::parse(json_str)
     end
 
   end

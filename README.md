@@ -1,26 +1,24 @@
 # Btcbox
 
-TODO: Write a gem description
+BtcboxのAPIを操作する用のライブラリ
+
+[APIドキュメント](https://www.btcbox.co.jp/help/api.html)
+
+
 
 ## Installation
 
-Add this line to your application's Gemfile:
+rubygemsにはまだ登録してないんで
 
-```ruby
-gem 'btcbox'
+```bash
+
+gem install specific_install
+gem specific_install -l "https://github.com/blue1st/btcbox.git"
 ```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install btcbox
-
 ## Usage
 
-TODO: Write usage instructions here
+
+
 
 ## Contributing
 

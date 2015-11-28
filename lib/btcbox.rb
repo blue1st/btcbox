@@ -1,5 +1,6 @@
 require "btcbox/version"
+require "btcbox/client"
 
-module Btcbox
-  # Your code goes here...
+module Btcbox 
+
 end
