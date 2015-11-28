@@ -17,6 +17,27 @@ gem specific_install -l "https://github.com/blue1st/btcbox.git"
 ```
 ## Usage
 
+## API
+
+やりたいことに応じて必要なAPIキーをあらかじめ取得しておく。
+
+ログイン後に「財産センター」内の「APIキーの取得」ページから取得できる。
+
+[Btcbox > APIキーの取得]("https://www.btcbox.co.jp/api/secret/keys/")
+
+|API|概要|APIキー|
+|:---|:---|:---|
+|Ticker|売り気配・買い気配・24時間での出来高など|不要|
+|Depth|注文量|不要|
+|Orders|オーダーブック|不要|
+|Blance|アカウントの情報|読み出しのみ|
+|Wallet|口座のアドレス|読み出しのみ|
+|Trade List|注文一覧|読み出しのみ|
+|Trade View|注文の詳細|読み出しのみ|
+|Trade Cancel|注文のキャンセル|読み書き|
+|Trade Add|注文の追加|読み書き|
+
+
 ```
 require 'btcbox'
 
