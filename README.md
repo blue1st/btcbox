@@ -17,7 +17,7 @@ gem specific_install -l "https://github.com/blue1st/btcbox.git"
 ```
 ## Usage
 
-## API
+### APIキー
 
 やりたいことに応じて必要なAPIキーをあらかじめ取得しておく。
 
