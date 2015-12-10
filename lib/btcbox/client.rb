@@ -16,7 +16,6 @@ module Btcbox
       uri = URI.parse(uri_str)
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = true if uri.port == 443
-      raise ArgumentError, 'HTTP redirect too deep' if limit == 0
 
       res = nil
       case method
@@ -32,7 +31,11 @@ module Btcbox
       when Net::HTTPSuccess
         res.body
       when Net::HTTPRedirection
-        fetch(res["location"], params, method, limit - 1)
+        if limit == 0
+          raise ArgumentError, 'HTTP redirect too deep'
+        else
+          fetch(res["location"], params, method, limit - 1)
+        end
       else
         raise ArgumentError, res.value
       end
@@ -40,8 +43,7 @@ module Btcbox
 
     def auth(params = {})
       params["key"] = @public_key
-
-      params["nonce"] = Time.now.to_i
+      params["nonce"] ="#{Time.now.to_i}#{'%06d' % Time.now.usec}".to_i
 
       algo = OpenSSL::Digest.new('sha256')
       key = Digest::MD5.hexdigest(@secret_key)
@@ -51,22 +53,32 @@ module Btcbox
       params
     end
 
+    def response_parse (json)
+      raise ArgumentError,"json is not found" unless json
+      res = JSON.parse json
+      if res.kind_of?(Hash) and res.key?("result") and res["result"] == false
+        raise ArgumentError, "error code:#{res['code']}"
+      else
+        res
+      end
+    end
+
     def ticker (coin = "btc")
       params = {coin:coin}
       json_str = fetch("#{@api_url}/ticker", params)
-      JSON.parse(json_str)
+      response_parse(json_str)
     end
 
     def depth (coin = "btc")
       params = {coin:coin}
       json_str = fetch("#{@api_url}/depth", params)
-      JSON.parse(json_str)
+      response_parse(json_str)
     end
 
     def orders (coin = "btc")
       params = {coin:coin}
       json_str = fetch("#{@api_url}/orders", params)
-      JSON.parse(json_str)
+      response_parse(json_str)
     end
 
 
@@ -76,14 +88,14 @@ module Btcbox
       params = {coin:coin}
       params = auth(params)
       json_str = fetch("#{@api_url}/balance", params, "POST")
-      JSON.parse(json_str)
+      response_parse(json_str)
     end
 
     def wallet (coin = "btc")
       params = {coin:coin}
       params = auth(params)
       json_str = fetch("#{@api_url}/wallet", params, "POST")
-      JSON.parse(json_str)
+      response_parse(json_str)
     end
 
     # 発注
@@ -93,7 +105,7 @@ module Btcbox
       params = {coin:coin, since:since, type:type}
       params = auth(params)
       json_str = fetch("#{@api_url}/trade_list", params, "POST")
-      JSON::parse(json_str)
+      response_parse(json_str)
     end
 
     # 個別の売買について id必須
@@ -101,7 +113,7 @@ module Btcbox
       params = {coin:coin, id:id}
       params = auth(params)
       json_str = fetch("#{@api_url}/trade_view", params, "POST")
-      JSON::parse(json_str)
+      response_parse(json_str)
     end
 
 
@@ -111,14 +123,14 @@ module Btcbox
       params = {coin:coin, id:id}
       params = auth(params)
       json_str = fetch("#{@api_url}/trade_cancel", params, "POST")
-      JSON::parse(json_str)
+      response_parse(json_str)
     end
 
     def trade_add (coin = "btc", amount, price, type)
       params = {coin:coin, amount:amount, price:price, type:type}
       params = auth(params)
       json_str = fetch("#{@api_url}/trade_add", params, "POST")
-      JSON::parse(json_str)
+      response_parse(json_str)
     end
 
   end
