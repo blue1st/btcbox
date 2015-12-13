@@ -6,7 +6,7 @@ require 'json'
 
 module Btcbox
   class Client 
-    def initialize (public_key, secret_key, api_url = "https://www.btcbox.co.jp/api/v1")
+    def initialize (public_key = nil, secret_key = nil, api_url = "https://www.btcbox.co.jp/api/v1")
       @public_key = public_key 
       @secret_key = secret_key
       @api_url = api_url
@@ -42,6 +42,7 @@ module Btcbox
     end
 
     def auth(params = {})
+      raise ArgumentError, 'need keys' if !@public_key or !@secret_key
       params["key"] = @public_key
       params["nonce"] ="#{Time.now.to_i}#{'%06d' % Time.now.usec}".to_i
 
